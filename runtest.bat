@@ -1,3 +1,3 @@
 
-@fsi --use:Test.fsx
+@fsi Test.fsx
 

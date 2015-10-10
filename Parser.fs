@@ -3,23 +3,24 @@ module Parser
 open Position
 open Cursor
 
-type 'a Item = Item of 'a * Pos
-               | Error of string * Pos
+type 'a Item = Item of 'a 
+               | Error of string 
 
-type ('a, 'b) Parser = Parser of ('a Cursor -> ('b Item * 'a Cursor) list)
+type CharCursor = Position * char Cursor
+
+type 'a Parser = Parser of (CharCursor -> ('a Item * CharCursor) list)
 
 let parse (Parser p) = p
 
 let item = 
   Parser(function
-         | End -> []
-         | c -> let i = Item (value c |> Option.get, Position.start)
-                [i, next c])
+         | (position, End) -> [Error "end of stream", (position, End)]
+         | (position, cursor) -> let char' = value cursor |> Option.get
+                                 [Item char', (advance char' position, next cursor)])
 
-let error = 
+let error message = 
   Parser(function
-         | End -> []
-         | c -> [Error ("could not satisfy", Position.start), c])
+         | charCursor -> [Error message, charCursor])
 
 type ParserBuilder () = 
   member x.Zero () =
@@ -43,10 +44,13 @@ let parser = new ParserBuilder()
 
 let satisfy p = 
   parser {let! c = item
-          if p c then 
-            return c
-          else
-            return! error}
+          match c with
+          | Error message -> return! error message
+          | Item v ->
+            if p (v) then 
+              return c
+            else
+              return! error "does not satisfy condition"}
 
 let single c = satisfy ((=) c)
 
@@ -54,6 +58,6 @@ let rec string =
   function
   | c::cs -> parser {let! _ = single c
                      let! _ = string cs
-                     return Item (c::cs, Position.start)}
-  | [] -> parser {return! error}
+                     return Item (c::cs) }
+  | [] -> parser {return! error "did not match character"}
 
