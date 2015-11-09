@@ -1,5 +1,4 @@
-#load "Position.fs"
-#load "Cursor.fs"
+module Fsql.Parser2
 
 open Position
 open Cursor
