@@ -1,9 +1,14 @@
+﻿
+#time 
 
 #load "Position.fs"
 #load "Cursor.fs"
 #load "Parser.fs"
+#load "Parser2.fs"
 
 open System.IO
+
+open FSql
 
 let fileCursor path =
   let str = File.ReadAllText (path)
@@ -32,3 +37,5 @@ let tuple4 =
 
 let res = Parser.parse (tuple4) (stringCursor "hel")
 printfn "%A" res
+
+
