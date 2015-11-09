@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSql", "src\FSql\FSql.fsproj", "{513A8D03-7571-4E09-AC9C-595393590DA5}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSql.Tests", "tests\FSql.Tests\FSql.Tests.fsproj", "{4CB36D90-E6C8-42F1-810A-8FC47449A4FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{513A8D03-7571-4E09-AC9C-595393590DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{513A8D03-7571-4E09-AC9C-595393590DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{513A8D03-7571-4E09-AC9C-595393590DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB36D90-E6C8-42F1-810A-8FC47449A4FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB36D90-E6C8-42F1-810A-8FC47449A4FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB36D90-E6C8-42F1-810A-8FC47449A4FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB36D90-E6C8-42F1-810A-8FC47449A4FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
