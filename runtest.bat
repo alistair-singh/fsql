@@ -1,3 +1,0 @@
-
-@fsi Test.fsx
-
