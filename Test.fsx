@@ -15,6 +15,11 @@ let stringCursor str =
   (Position.start, Cursor.Valid (0, data))
 
 let cursor = fileCursor "Position.fs"
+
+let pos' = 
+  function 
+  | Parser.Item (i, p) -> p
+  | Parser.Error (i, p) -> p
  
 let tuple4 =
   Parser.parser {
@@ -22,8 +27,8 @@ let tuple4 =
     let! i2 = Parser.item
     let! i3 = Parser.item
     let! i4 = Parser.item
-    return Parser.Item(i1,i2,i3,i4)
+    return! Parser.Parser(fun cs -> [Parser.Item ((i1, i2, i3, i4), pos' i1), cs])
   }
 
-let res = Parser.parse (tuple4) cursor
+let res = Parser.parse (tuple4) (stringCursor "hel")
 printfn "%A" res
