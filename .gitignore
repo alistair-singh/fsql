@@ -1,4 +1,7 @@
 .paket/
 .nuget/
 .fake/
+.vs/
+bin/
+obj/
 packages/

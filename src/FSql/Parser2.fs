@@ -1,28 +1,30 @@
-module Fsql.Parser2
+namespace FSql
 
-open Position
-open Cursor
+module Parser2 =
 
-type Message = 
-  | Unexpected of string
-  | Expected of string
-  | Message of string
+  open FSql.Cursor
+  open FSql.Position
 
-type ParseError =
-  { Position: Position
-    Messages: Message list }
+  type Message = 
+    | Unexpected of string
+    | Expected of string
+    | Message of string
 
-type State = 
-  { Cursor: char Cursor
-    Position: Position }
+  type ParseError =
+    { Position: Position
+      Messages: Message list }
 
-type 'a Consumed = 
-  | Consumed of 'a
-  | Empty of 'a
+  type State = 
+    { Cursor: char Cursor
+      Position: Position }
 
-type 'a Reply = 
-  | Ok of ('a * State)
-  | Error of ParseError
+  type 'a Consumed = 
+    | Consumed of 'a
+    | Empty of 'a
 
-type Hints = Hints of string list list
+  type 'a Reply = 
+    | Ok of ('a * State)
+    | Error of ParseError
+
+  type Hints = Hints of string list list
 

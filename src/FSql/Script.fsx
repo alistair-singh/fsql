@@ -7,7 +7,6 @@
 #load "Parser2.fs"
 
 open System.IO
-
 open FSql
 
 let fileCursor path =
@@ -19,7 +18,7 @@ let stringCursor str =
   let data = Array.ofSeq str
   (Position.start, Cursor.Valid (0, data))
 
-let cursor = fileCursor "Position.fs"
+let cursor = stringCursor "some string data"
 
 let pos' = 
   function 
