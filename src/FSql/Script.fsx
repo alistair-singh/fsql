@@ -6,6 +6,7 @@
 #load "Parser.fs"
 #load "Parser2.fs"
 
+open System
 open System.IO
 open FSql
 
@@ -34,7 +35,11 @@ let tuple4 =
     return! Parser.Parser(fun cs -> [Parser.Item ((i1, i2, i3, i4), pos' i1), cs])
   }
 
+printfn "begin run %A" DateTime.Now
+
 let res = Parser.parse (tuple4) (stringCursor "hel")
 printfn "%A" res
+
+printfn "end run %A" DateTime.Now
 
 
