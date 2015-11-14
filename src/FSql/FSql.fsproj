@@ -49,6 +49,7 @@
     <Compile Include="Position.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="Parser2.fs" />
+    <Compile Include="Parser3.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
