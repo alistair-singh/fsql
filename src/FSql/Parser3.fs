@@ -52,6 +52,12 @@ module Parser3 =
 
   let pZero () = pFail "Zero Error"
 
+  let pEos () = 
+    Parser <| fun s ok error ->
+      match uncons s.input with
+      | None -> ok () s
+      | Some (x,xs) -> sprintf "Unexpected %A" x |> error
+
   let pToken nextpos test = 
     Parser <| fun s ok error ->
       match uncons s.input with
