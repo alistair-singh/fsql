@@ -15,7 +15,7 @@ module Parser3 =
                                     -> ('a -> State -> 'b)  // Ok
                                     -> (string -> 'b)     // Error 
                                     -> 'b) 
-  let uncons s =
+  let inline uncons s =
     let head = Seq.tryHead s
     match head with
     | None -> None
@@ -42,23 +42,23 @@ module Parser3 =
   let runParser p s =
     runParser' p s |> snd
 
-  let pMap f p = Parser <| fun s ok error -> unParser p s (ok |> f) error
+  let inline pMap f p = Parser <| fun s ok error -> unParser p s (ok |> f) error
 
-  let pBind m k = Parser <| fun s ok error ->
+  let inline pBind m k = Parser <| fun s ok error ->
                               let cok x s = unParser (k x) s ok error
                               unParser m s cok error
 
-  let pFail msg = Parser <| fun _ _ error -> error msg
+  let inline pFail msg = Parser <| fun _ _ error -> error msg
 
-  let pZero () = pFail "Zero Error"
+  let inline pZero () = pFail "Zero Error"
 
-  let pEos () = 
+  let inline pEos () = 
     Parser <| fun s ok error ->
       match uncons s.input with
       | None -> ok () s
       | Some (x,xs) -> sprintf "Unexpected %A" x |> error
 
-  let pToken nextpos test = 
+  let inline pToken nextpos test = 
     Parser <| fun s ok error ->
       match uncons s.input with
       | None -> error "End Of Input"
@@ -70,7 +70,7 @@ module Parser3 =
           let newstate = { input = cs ; position = newpos }
           ok a newstate
 
-  let pTokens nextpos test tts =
+  let inline pTokens nextpos test tts =
     match uncons tts with
     | None -> Parser <| fun s ok _ -> ok [] s
     | Some (_, _) -> Parser <| fun s ok error -> 
