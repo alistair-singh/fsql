@@ -56,10 +56,12 @@ module Parser3 =
 
   type Hints = { hints: string list list }
 
-  //let toHints parserError = 
-    //let msgs = List.filter (fromEnum) parserError.messages
-    //let hints = if List.isEmpty then List.empty else List.map messageString msgs
-    //hints
+  let toHints parserError = 
+    let msgs = List.filter (fromEnum >> ((=) 1)) parserError.messages
+    let hints = if List.isEmpty msgs then List.empty else List.map messageString msgs
+    {hints: hints}
+
+
 
   type Parser<'a, 'b, 'c> = Parser of (State<'a>
                                     -> ('b -> State<'a> -> 'c)  // Ok
