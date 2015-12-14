@@ -2,52 +2,16 @@
 namespace FSql
 
 module Parser3 =
-
-  type Position = { line: int; column: int; absolute: int }
+  open Position
+  open Error
 
   type State<'a> = { input: seq<'a>; position: Position }
 
   type Consumption = Consumed | Virgin
 
-  type Message = Unexpected of string
-               | Expected of string
-               | Message of string
-
-  let messageString = function
-    | Unexpected s -> s
-    | Expected s -> s
-    | Message s -> s
-
-  let fromEnum = function
-    | Unexpected _ -> 0
-    | Expected _ -> 1
-    | Message _ -> 2
-
-  type ParseError = { position: Position ; messages : Message list }
-
-  let addErrorMessage m err = 
-    let pre = List.filter ((<) m) (err.messages)
-    let post = List.filter ((>) m) (err.messages)
-    let msgs = pre @ [m] @ post
-    { err with messages = msgs }
-
-  let addErrorMessages = List.foldBack addErrorMessage 
-
-  let newErrorUnknown pos = { position = pos; messages = List.empty }
-
-  let newErrorMessages msgs pos = addErrorMessages msgs <| newErrorUnknown pos
-
-  let newErrorMessage msg = newErrorMessages [msg]
-
-  let badMessage = messageString >> Seq.isEmpty
-
-  let setErrorMessage msg error =
-    let enum = fromEnum msg
-    let xs = List.filter (fromEnum >> ((<>) enum)) (error.messages)
-    let err = { error with messages = xs }
-    if badMessage msg then err else addErrorMessage msg err
-
   let unexpectedErr msg = newErrorMessage (Unexpected msg)
+
+  let eoi = "end of input"
 
   type Result<'a> = 
                 | Ok of 'a
@@ -102,12 +66,15 @@ module Parser3 =
                               unParser m s cok error
 
   let inline pFail msg = Parser <| fun s _ error -> 
-    let message = Message msg 
-    error <| newErrorMessage message (s.position)
+    error <| newErrorMessage (Message msg) (s.position)
 
-  let inline pZero () = pFail <| "Zero Error"
+  let inline pFailure msgs = Parser <| fun s _ error ->
+    error <| newErrorMessages msgs s.position
 
-  let inline pEos () = 
+  let inline pZero () = Parser <| fun s _ error ->
+    error <| newErrorUnknown s.position
+
+  let inline pEof () = 
     Parser <| fun s ok error ->
       match uncons s.input with
       | None -> ok () s
@@ -126,10 +93,11 @@ module Parser3 =
           ok a newstate
 
   let inline pTokens nextpos test tts =
-    //let errExpect x = setErrorMessage (showToken tts |> Expected)
     match uncons tts with
     | None -> Parser <| fun s ok _ -> ok [] s
     | Some (_, _) -> Parser <| fun s ok error -> 
+      let errExpect x = 
+        setErrorMessage (showToken tts |> Expected) (newErrorMessage (Unexpected x) s.position)
       let rec walk ts is rs =
         match uncons ts with
         | None -> 
@@ -137,12 +105,14 @@ module Parser3 =
           let s' =  { input = rs ; position = pos' }
           ok (List.rev is) s'
         | Some (t, ts) ->
+          let errorCont = if Seq.isEmpty is then error else error
+          let what  = if Seq.isEmpty is then eoi else showToken <| List.rev is
           match uncons rs with
-          | None -> error <| newErrorMessage (Expected "no clue") s.position
+          | None -> (errExpect >> errorCont) <| what
           | Some (c, cs) ->
               if test t c then
                 walk ts (c::is) cs
               else
-                error <| newErrorMessage (Expected "no clue 2") s.position
+                (showToken >> errExpect >> errorCont) <| List.rev (c::is)
       walk tts [] s.input
 
