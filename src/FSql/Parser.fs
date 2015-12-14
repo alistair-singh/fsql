@@ -2,72 +2,117 @@
 namespace FSql
 
 module Parser =
+  open Position
+  open Error
 
-  open FSql.Cursor
-  open FSql.Position
+  type State<'a> = { input: seq<'a>; position: Position }
 
-  type 'a Item = Item of 'a * Position
-                 | Error of string * Position
+  type Consumption = Consumed | Virgin
 
-  type CharCursor = Position * char Cursor
+  let unexpectedErr msg = newErrorMessage (Unexpected msg)
 
-  type 'a Parser = Parser of (CharCursor -> ('a Item * CharCursor) list)
+  let eoi = "end of input"
 
-  let parse (Parser p) = p
+  type Result<'a> = 
+                | Ok of 'a
+                | Error of ParseError
 
-  let error message = 
-    Parser(function
-           | charCursor -> [Error (message, fst charCursor), charCursor])
+  type Reply<'a,'b> = { state : State<'a>; consumption: Consumption; result: Result<'b> }
 
-  let item = 
-    Parser(function
-           | (position, End) -> [Error ("end of stream", position), (position, End)]
-           | (position, cursor) -> let char' = value cursor |> Option.get
-                                   [Item (char', position), (position, next cursor)])
+  type Hints = { hints: string list list }
 
-  let isNotError =
-    function
-    | (Item (_,_) , _) ->true
-    | (Error (_,_) , _) -> false
+  let toHints parserError = 
+    let msgs = List.filter (fromEnum >> ((=) 1)) parserError.messages
+    let hints = if List.isEmpty msgs then List.empty else [List.map messageString msgs]
+    {hints = hints}
 
-  type ParserBuilder () = 
-    member x.Zero () =
-      Parser (fun cs -> [Error ("unexpected", fst cs), cs]) 
-    member x.Return a = 
-      Parser (fun cs -> [Item (a, fst cs), cs]) 
-    member x.ReturnFrom a = a 
-    member x.Bind (p, f) = 
-      Parser (fun cs -> List.concat [for (a, cs') in parse p cs -> parse (f a) cs'])
-    static member (++) (p, q) = 
-      Parser (fun cs -> (parse p cs) @ (parse q cs)) 
+  type Parser<'a, 'b, 'c> = Parser of (State<'a>
+                                    -> ('b -> State<'a> -> 'c)  // Ok
+                                    -> (ParseError -> 'c)     // Error 
+                                    -> 'c) 
+  let inline uncons s =
+    let head = Seq.tryHead s
+    match head with
+    | None -> None
+    | Some i -> Some (i, Seq.tail s)
 
-  let (++) p q = ParserBuilder.(++) (p, q) 
+  let showToken x = sprintf "%A" x
 
-  let (+++) p q = 
-    Parser (fun cs -> match (parse (p ++ q) cs) with 
-                      | []    -> []
-                      | x::xs -> [x]) 
+  let unParser (Parser p) state ok error = p state ok error
 
-  let parser = new ParserBuilder() 
+  let pReturn a = Parser <| fun s ok _ -> ok a s
 
-  let satisfy p = 
-    parser {let! c = item
-            match c with
-            | Error (message, position)-> return! error message
-            | Item (v, position) ->
-              if p (v) then 
-                return c
-             }
+  let pPure = pReturn
 
-  let single c = satisfy ((=) c)
+  let runParsec' p s =
+    let cok a s' = { state = s' ; consumption = Consumed; result = Ok a } 
+    let cerr msg = { state = s  ; consumption = Consumed; result = Error msg } 
+    unParser p s cok cerr
 
-  let rec string = 
-    function
-    | c::cs -> parser {let! i = single c
-                       let position = match i with
-                                      | Item (_, pos) -> pos
-                                      | Error (_, pos) -> pos
-                       let! _ = string cs
-                       return c::cs }
-    | [] -> parser {return! error "did not match character"}
+  let runParser' p s =
+    let reply = runParsec' p s
+    let { state = s' ; result = r } = reply
+    match r with
+    | Error msg -> (s', Choice1Of2 msg)
+    | Ok a -> (s', Choice2Of2 a)
+
+  let runParser p s =
+    runParser' p s |> snd
+
+  let inline pMap f p = Parser <| fun s ok error -> unParser p s (ok |> f) error
+
+  let inline pBind m k = Parser <| fun s ok error ->
+                              let cok x s = unParser (k x) s ok error
+                              unParser m s cok error
+
+  let inline pFail msg = Parser <| fun s _ error -> 
+    error <| newErrorMessage (Message msg) (s.position)
+
+  let inline pFailure msgs = Parser <| fun s _ error ->
+    error <| newErrorMessages msgs s.position
+
+  let inline pZero () = Parser <| fun s _ error ->
+    error <| newErrorUnknown s.position
+
+  let inline pEof () = 
+    Parser <| fun s ok error ->
+      match uncons s.input with
+      | None -> ok () s
+      | Some (x,_) -> error <| unexpectedErr (showToken x) s.position
+
+  let inline pToken nextpos test = 
+    Parser <| fun s ok error ->
+      match uncons s.input with
+      | None -> error <| unexpectedErr "End Of Input" s.position
+      | Some (c,cs) -> 
+        match test c with 
+        | Choice1Of2 err -> error <| addErrorMessages err (newErrorUnknown s.position)
+        | Choice2Of2 a -> 
+          let newpos = nextpos s.position c
+          let newstate = { input = cs ; position = newpos }
+          ok a newstate
+
+  let inline pTokens nextpos test tts =
+    match uncons tts with
+    | None -> Parser <| fun s ok _ -> ok [] s
+    | Some (_, _) -> Parser <| fun s ok error -> 
+      let errExpect x = 
+        setErrorMessage (showToken tts |> Expected) (newErrorMessage (Unexpected x) s.position)
+      let rec walk ts is rs =
+        match uncons ts with
+        | None -> 
+          let pos' = nextpos s.position tts
+          let s' =  { input = rs ; position = pos' }
+          ok (List.rev is) s'
+        | Some (t, ts) ->
+          let errorCont = if Seq.isEmpty is then error else error
+          let what  = if Seq.isEmpty is then eoi else showToken <| List.rev is
+          match uncons rs with
+          | None -> (errExpect >> errorCont) <| what
+          | Some (c, cs) ->
+              if test t c then
+                walk ts (c::is) cs
+              else
+                (showToken >> errExpect >> errorCont) <| List.rev (c::is)
+      walk tts [] s.input
 
