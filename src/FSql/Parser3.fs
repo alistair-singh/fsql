@@ -39,12 +39,13 @@ module Parser3 =
 
   let newErrorMessage msg = newErrorMessages [msg]
 
-  let badMessage msgs = Seq.isEmpty msgs
+  let badMessage = messageString >> Seq.isEmpty
 
-  //let setErrorMessage msg error =
-    //let xs = filter (fromEnum >> ((!=) fromEnum msg) error.messages
-    //let err = { error with messages = xs }
-    //if badMessage msg then err else addErrorMessages msg err
+  let setErrorMessage msg error =
+    let enum = fromEnum msg
+    let xs = List.filter (fromEnum >> ((<>) enum)) (error.messages)
+    let err = { error with messages = xs }
+    if badMessage msg then err else addErrorMessage msg err
 
   let unexpectedErr msg = newErrorMessage (Unexpected msg)
 
@@ -60,8 +61,6 @@ module Parser3 =
     let msgs = List.filter (fromEnum >> ((=) 1)) parserError.messages
     let hints = if List.isEmpty msgs then List.empty else [List.map messageString msgs]
     {hints = hints}
-
-
 
   type Parser<'a, 'b, 'c> = Parser of (State<'a>
                                     -> ('b -> State<'a> -> 'c)  // Ok
