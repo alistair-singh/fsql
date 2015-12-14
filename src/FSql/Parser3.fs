@@ -58,8 +58,8 @@ module Parser3 =
 
   let toHints parserError = 
     let msgs = List.filter (fromEnum >> ((=) 1)) parserError.messages
-    let hints = if List.isEmpty msgs then List.empty else List.map messageString msgs
-    {hints: hints}
+    let hints = if List.isEmpty msgs then List.empty else [List.map messageString msgs]
+    {hints = hints}
 
 
 
