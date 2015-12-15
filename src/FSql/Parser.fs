@@ -40,9 +40,11 @@ module Parser =
 
   let unParser (Parser p) state ok error = p state ok error
 
-  let pReturn a = Parser <| fun s ok _ -> ok a s
+  let inline pReturn a = Parser <| fun s ok _ -> ok a s
 
   let pPure = pReturn
+
+  let initialState name s = { input = s; position = (initialPos name)  }
 
   let runParsec' p s =
     let cok a s' = { state = s' ; consumption = Consumed; result = Ok a } 
@@ -116,3 +118,8 @@ module Parser =
                 (showToken >> errExpect >> errorCont) <| List.rev (c::is)
       walk tts [] s.input
 
+  let satisfy f = 
+    let testChar (x: char) =
+      if f x then Choice2Of2 x
+      else (Choice1Of2 << List.singleton << Unexpected << showToken) <| x
+    pToken updatePosChar testChar
