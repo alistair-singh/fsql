@@ -21,13 +21,26 @@ module Parser =
 
   type Hints = { hints: string list list }
 
+  let hEmpty = { hints = List.empty }
+
   let toHints parserError = 
     let msgs = List.filter (fromEnum >> ((=) 1)) parserError.messages
     let hints = if List.isEmpty msgs then List.empty else [List.map messageString msgs]
     {hints = hints}
 
+  //let withHints hints error = 
+  //  addErrorMessages (Expected <| String.concat String.empty hints.hints)
+
+  //let accHints = 
+
+  let refreshLastHint hs l = 
+    match (hs, l) with
+    | ({ hints = _::cs }, "") -> { hints = cs }
+    | ({ hints = _::cs }, l') -> { hints = [l']::cs }
+    | (hEmpty, _) -> hEmpty
+
   type Parser<'a, 'b, 'c> = Parser of (State<'a>
-                                    -> ('b -> State<'a> -> 'c)  // Ok
+                                    -> ('b -> State<'a> -> Hints -> 'c)  // Ok
                                     -> (ParseError -> 'c)     // Error 
                                     -> 'c) 
   let inline uncons s =
@@ -40,14 +53,14 @@ module Parser =
 
   let unParser (Parser p) state ok error = p state ok error
 
-  let inline pReturn a = Parser <| fun s ok _ -> ok a s
+  let inline pReturn a = Parser <| fun s ok _ -> ok a s hEmpty
 
   let pPure = pReturn
 
   let initialState name s = { input = s; position = (initialPos name)  }
 
   let runParsec' p s =
-    let cok a s' = { state = s' ; consumption = Consumed; result = Ok a } 
+    let cok a s' _ = { state = s' ; consumption = Consumed; result = Ok a } 
     let cerr msg = { state = s  ; consumption = Consumed; result = Error msg } 
     unParser p s cok cerr
 
@@ -64,7 +77,7 @@ module Parser =
   let inline pMap f p = Parser <| fun s ok error -> unParser p s (ok |> f) error
 
   let inline pBind m k = Parser <| fun s ok error ->
-                              let cok x s = unParser (k x) s ok error
+                              let cok x s h = unParser (k x) s ok error
                               unParser m s cok error
 
   let inline pFail msg = Parser <| fun s _ error -> 
@@ -76,11 +89,18 @@ module Parser =
   let inline pZero () = Parser <| fun s _ error ->
     error <| newErrorUnknown s.position
 
+  let inline pLabel l p = Parser <| fun s cok cerr ->
+    let l' = if Seq.isEmpty l then l else "rest of " + l
+    let cok' x s' hs = cok x s' <| refreshLastHint hs l
+    unParser p s cok' cerr
+    
+
   let inline pEof () = 
-    Parser <| fun s ok error ->
+    let parser = Parser <| fun s ok error ->
       match uncons s.input with
-      | None -> ok () s
+      | None -> ok () s hEmpty
       | Some (x,_) -> error <| unexpectedErr (showToken x) s.position
+    pLabel eoi parser
 
   let inline pToken nextpos test = 
     Parser <| fun s ok error ->
@@ -92,11 +112,11 @@ module Parser =
         | Choice2Of2 a -> 
           let newpos = nextpos s.position c
           let newstate = { input = cs ; position = newpos }
-          ok a newstate
+          ok a newstate hEmpty
 
   let inline pTokens nextpos test tts =
     match uncons tts with
-    | None -> Parser <| fun s ok _ -> ok [] s
+    | None -> Parser <| fun s ok _ -> ok [] s hEmpty
     | Some (_, _) -> Parser <| fun s ok error -> 
       let errExpect x = 
         setErrorMessage (showToken tts |> Expected) (newErrorMessage (Unexpected x) s.position)
@@ -105,7 +125,7 @@ module Parser =
         | None -> 
           let pos' = nextpos s.position tts
           let s' =  { input = rs ; position = pos' }
-          ok (List.rev is) s'
+          ok (List.rev is) s' hEmpty
         | Some (t, ts) ->
           let errorCont = if Seq.isEmpty is then error else error
           let what  = if Seq.isEmpty is then eoi else showToken <| List.rev is
@@ -123,3 +143,19 @@ module Parser =
       if f x then Choice2Of2 x
       else (Choice1Of2 << List.singleton << Unexpected << showToken) <| x
     pToken updatePosChar testChar
+
+  let char' c =  satisfy ((=)c)
+
+  type ParserBuilder () =
+    member x.Bind(func, comp) = pBind func comp
+    member x.Return(value) = pReturn value
+    member x.ReturnFrom(value) = value
+    member x.Zero() = pZero ()
+
+  let parser = new ParserBuilder ()
+
+  let char2 a b = parser {
+                    let! c1 = char' a
+                    let! c2 = char' b
+                    return (c1, c2)
+                  }
