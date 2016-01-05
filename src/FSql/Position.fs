@@ -9,6 +9,9 @@ module Position =
 
   let updatePosChar pos ch =
     match ch with
+    | '\r' -> pos
     | '\n' -> { pos with line = pos.line+1; column = 1 }
     | _    -> { pos with column = pos.column + 1 }
+
+  let updatePosString pos (str: seq<char>) = Seq.fold (updatePosChar) pos str
 

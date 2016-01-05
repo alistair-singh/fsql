@@ -158,6 +158,8 @@ module Parser =
 
   let char' c =  satisfy ((=)c) |> pLabel (showToken c)
 
+  let string' (str: seq<char>) = pTokens updatePosString (=) str
+
   type ParserBuilder () =
     member x.Bind(func, comp) = pBind func comp
     member x.Return(value) = pReturn value

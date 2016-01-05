@@ -40,3 +40,9 @@ printfn "res3 - %A" res3
 let res4 = runParsec' (char2eof 'a' 'b') (initialState None "ab ")
 printfn "res4 - %A" res4
 
+let res5 = runParsec' (string' "ab") (initialState None "ab")
+printfn "res5 - %A" res5
+
+let res6 = runParsec' (string' "ab") (initialState None "ac")
+printfn "res6 - %A" res6
+
