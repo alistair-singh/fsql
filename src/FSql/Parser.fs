@@ -28,11 +28,16 @@ module Parser =
     let hints = if List.isEmpty msgs then List.empty else [List.map messageString msgs]
     {hints = hints}
 
-  let withHints hints error = 
-    error << (Seq.concat hints.hints 
-    |> Seq.map Expected
-    |> List.ofSeq
-    |> addErrorMessages)
+  let withHints hints c e = 
+    let isMessage = function 
+      | Message _ -> true
+      | _         -> false
+    (if Seq.forall isMessage e.messages
+      then c
+      else c << (Seq.concat hints.hints 
+                |> Seq.map Expected
+                |> List.ofSeq
+                |> addErrorMessages)) e
 
   let accHints hs1 c x s hs2 = c x s { hints = (hs1.hints @ hs2.hints) }
 
