@@ -48,6 +48,8 @@
     <Compile Include="Position.fs" />
     <Compile Include="Error.fs" />
     <Compile Include="Parser.fs" />
+    <None Include="Scripts\load-references-debug.fsx" />
+    <None Include="Scripts\load-project-debug.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -66,7 +68,6 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <!-- <Import Project="..\..\packages\FSharpLint\build\FSharpLint.targets" /> -->
-
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
