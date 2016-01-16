@@ -1,9 +1,23 @@
 ﻿namespace FSql.Tests
 
+// Things to test list
+//// Position.initialPosition
+//// Position.updatePosChar
+//// Position.updatePosString
+//// Error.badMessage
+//// Error.errorIsUnknown
+//// Error.addErrorMessage
+//// Error.addErrorMessages
+//// Error.newErrorUnknown
+//// Error.newErrorMessages
+//// Error.newErrorMessage
+//// Error.setErrorMessages
+
+
 module Test = 
   open NUnit.Framework
   open FsUnit
-  open FSql.Parser
+  open FSql.Primitive
   open FSql.Error
   
   [<Test>]

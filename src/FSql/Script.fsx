@@ -3,9 +3,9 @@
 #time 
 #load "Position.fs"
 #load "Error.fs"
-#load "Parser.fs"
+#load "Primitive.fs"
 
-open FSql.Parser
+open FSql.Primitive
 
 printfn "Basic Tests"
 

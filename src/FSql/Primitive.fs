@@ -1,6 +1,6 @@
 namespace FSql
 
-module Parser = 
+module Primitive = 
   open Position
   open Error
   

@@ -4,4 +4,4 @@
 #load "../AssemblyInfo.fs"
       "../Position.fs"
       "../Error.fs"
-      "../Parser.fs"
+      "../Primitive.fs"
