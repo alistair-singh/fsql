@@ -43,5 +43,4 @@ module Test =
                       Unexpected "'a'" ] }
         consumption = Virgin }
     
-    let actual = runParsec' (char' 'b') (initialState None "abc")
-    actual |> should equal expected
+    runParsec' (char' 'b') (initialState None "abc") |> should equal expected
