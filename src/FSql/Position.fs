@@ -15,7 +15,8 @@ module Position =
   
   let updatePosChar pos ch = 
     match ch with
-    | '\r' -> pos
+    | '\r' -> 
+      { pos with absolute = pos.absolute + 1 }
     | '\n' -> 
       { pos with line = pos.line + 1
                  column = 1
@@ -24,3 +25,4 @@ module Position =
                       absolute = pos.absolute + 1 }
   
   let updatePosString pos (str : seq<char>) = Seq.fold (updatePosChar) pos str
+

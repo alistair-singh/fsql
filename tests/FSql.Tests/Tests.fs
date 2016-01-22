@@ -1,9 +1,6 @@
 ﻿namespace FSql.Tests
 
 // Things to test list
-//// Position.initialPosition
-//// Position.updatePosChar
-//// Position.updatePosString
 //// Error.badMessage
 //// Error.errorIsUnknown
 //// Error.addErrorMessage
@@ -12,7 +9,31 @@
 //// Error.newErrorMessages
 //// Error.newErrorMessage
 //// Error.setErrorMessages
-
+//// Primitive.unexpectedErr
+//// Primitive.hEmpty
+//// Primitive.toHints
+//// Primitive.withHints
+//// Primitive.accHints
+//// Primitive.refreshLastHints
+//// Primitive.uncons
+//// Primitive.showToken
+//// Primitive.initialState
+//// Primitive.runParsec'
+//// Primitive.runParser'
+//// Primitive.runParser
+//// Primitive.pMap -> rename to map
+//// Primitive.pBind -> rename to bind
+//// Primitive.pReturn -> rename to return
+//// Primitive.pFail -> rename to fail
+//// Primitive.pFailure -> rename to failure
+//// Primitive.pZero -> rename to zero
+//// Primitive.pLabel -> rename to label
+//// Primitive.pEof -> rename to eof
+//// Primitive.pToken -> rename to token
+//// Primitive.pTokens -> rename to tokens
+//// Primitive.satisfy -> move to Char.fs
+//// Primitive.char' -> move to Char.fs
+//// Primitive.string' -> move to Char.fs
 
 module Test = 
   open NUnit.Framework
