@@ -1,16 +1,8 @@
 ﻿namespace FSql.Tests
 
 // Things to test list
-//// Error.badMessage
-//// Error.errorIsUnknown
-//// Error.addErrorMessage
-//// Error.addErrorMessages
-//// Error.newErrorUnknown
-//// Error.newErrorMessages
-//// Error.newErrorMessage
-//// Error.setErrorMessages
 //// Primitive.unexpectedErr
-//// Primitive.hEmpty
+//// Primitive.hEmpty -> rename to emptyHints
 //// Primitive.toHints
 //// Primitive.withHints
 //// Primitive.accHints

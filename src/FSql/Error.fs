@@ -3,6 +3,7 @@ namespace FSql
 module Error = 
   open Position
   
+  //TODO: remove enum and make comparable
   type Message = 
     | Unexpected of string
     | Expected of string

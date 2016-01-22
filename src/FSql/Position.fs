@@ -7,12 +7,14 @@ module Position =
       column : int
       absolute : int }
   
+  //TODO: Rename to initialPosition
   let initialPos name = 
     { name = name
       line = 1
       column = 1
       absolute = 0 }
   
+  //TODO: Rename to updatePositionChar
   let updatePosChar pos ch = 
     match ch with
     | '\r' -> 
@@ -24,5 +26,6 @@ module Position =
     | _ -> { pos with column = pos.column + 1
                       absolute = pos.absolute + 1 }
   
+  //TODO: Rename to updatePositionString
   let updatePosString pos (str : seq<char>) = Seq.fold (updatePosChar) pos str
 
