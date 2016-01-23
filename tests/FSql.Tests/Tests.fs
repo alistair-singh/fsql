@@ -26,7 +26,6 @@
 //// Primitive.satisfy -> move to Char.fs
 //// Primitive.char' -> move to Char.fs
 //// Primitive.string' -> move to Char.fs
-
 module Test = 
   open NUnit.Framework
   open FsUnit
@@ -66,8 +65,7 @@ module Test =
                       column = 1
                       absolute = 0 }
                   messages = 
-                    [ Expected "'b'"
-                      Unexpected "'a'" ] }
+                    [ Unexpected "'a'"
+                      Expected "'b'" ] }
         consumption = Virgin }
-    
     runParsec' (char' 'b') (initialState None "abc") |> should equal expected

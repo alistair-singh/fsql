@@ -3,4 +3,5 @@
 #load "load-references-debug.fsx"
 #load "../AssemblyInfo.fs"
       "../Position.fs"
+      "../Error.fs"
       "../Tests.fs"

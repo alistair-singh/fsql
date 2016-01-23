@@ -30,8 +30,8 @@ module Error =
   let errorIsUnknown err = Seq.isEmpty err.messages
   
   let addErrorMessage m err = 
-    let pre = List.filter ((<) m) (err.messages)
-    let post = List.filter ((>) m) (err.messages)
+    let pre = List.filter ((>) m) (err.messages)
+    let post = List.filter ((<) m) (err.messages)
     let msgs = pre @ [ m ] @ post
     { err with messages = msgs }
   
@@ -41,7 +41,7 @@ module Error =
     { position = pos
       messages = List.empty }
   
-  let newErrorMessages msgs pos = addErrorMessages msgs <| newErrorUnknown pos
+  let newErrorMessages msgs pos = newErrorUnknown pos |> addErrorMessages msgs 
   let newErrorMessage msg = newErrorMessages [ msg ]
   
   let setErrorMessage msg error = 
