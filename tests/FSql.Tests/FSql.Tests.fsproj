@@ -54,10 +54,11 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Position.fs" />
     <Compile Include="Error.fs" />
+    <Compile Include="Character.fs" />
     <Compile Include="Tests.fs" />
-    <Content Include="App.config" />
     <None Include="Scripts\load-references-debug.fsx" />
     <None Include="Scripts\load-project-debug.fsx" />
+    <Content Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

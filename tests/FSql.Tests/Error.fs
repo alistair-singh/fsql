@@ -7,32 +7,32 @@ module Error =
   open FSql.Position
   
   [<Test>]
-  let ``fromEnum Unexpected = 0``() = 
+  let ``fromEnum - Unexpected = 0``() = 
     let expected = 0
     fromEnum (Unexpected "some message") |> should equal expected
   
   [<Test>]
-  let ``fromEnum Expected = 1``() = 
+  let ``fromEnum - Expected = 1``() = 
     let expected = 1
     fromEnum (Expected "some message") |> should equal expected
   
   [<Test>]
-  let ``fromEnum Message = 2``() = 
+  let ``fromEnum - Message = 2``() = 
     let expected = 2
     fromEnum (Message "some message") |> should equal expected
   
   [<Test>]
-  let ``badMessage returns true for bad messages``() = 
+  let ``badMessage - returns true for bad messages``() = 
     let expected = true
     badMessage (Message "") |> should equal expected
   
   [<Test>]
-  let ``badMessage returns false for good messages``() = 
+  let ``badMessage - returns false for good messages``() = 
     let expected = false
     badMessage (Message "some random message") |> should equal expected
   
   [<Test>]
-  let ``errorIsUnknown returns true for empty errors``() = 
+  let ``errorIsUnknown - returns true for empty errors``() = 
     let expected = true
     
     let errors = 
@@ -41,7 +41,7 @@ module Error =
     errorIsUnknown errors |> should equal expected
   
   [<Test>]
-  let ``errorIsUnknown returns false for non empty errors``() = 
+  let ``errorIsUnknown - returns false for non empty errors``() = 
     let expected = false
     
     let errors = 
@@ -50,7 +50,7 @@ module Error =
     errorIsUnknown errors |> should equal expected
   
   [<Test>]
-  let ``addErrorMessage must order add message in correct order``() = 
+  let ``addErrorMessage - must order add message in correct order``() = 
     let errors = 
       { position = initialPos None
         messages = 
@@ -76,7 +76,7 @@ module Error =
     addErrorMessage msg errors |> should equal expected
   
   [<Test>]
-  let ``addErrorMessages must order add messages in correct order``() = 
+  let ``addErrorMessages - must order add messages in correct order``() = 
     let errors = 
       { position = initialPos None
         messages = 
@@ -108,7 +108,7 @@ module Error =
     addErrorMessages msgs errors |> should equal expected
   
   [<Test>]
-  let ``newErrorUnknown is valid``() = 
+  let ``newErrorUnknown - is valid``() = 
     let pos = initialPos None
     
     let expected = 
@@ -117,13 +117,13 @@ module Error =
     newErrorUnknown pos |> should equal expected
   
   [<Test>]
-  let ``newErrorUnknown is verifyable by errorIsUnknown``() = 
+  let ``newErrorUnknown - is verifyable by errorIsUnknown``() = 
     let pos = initialPos None
     let expected = true
     errorIsUnknown (newErrorUnknown pos) |> should equal expected
   
   [<Test>]
-  let ``newErrorMessage creates valid error``() = 
+  let ``newErrorMessage - creates valid error``() = 
     let pos = initialPos None
     let msg = Unexpected "Some message"
     
@@ -133,7 +133,7 @@ module Error =
     newErrorMessage msg pos |> should equal expected
   
   [<Test>]
-  let ``newErrorMessages creates valid error``() = 
+  let ``newErrorMessages - creates valid error``() = 
     let pos = initialPos None
     
     let msgs = 
@@ -147,7 +147,7 @@ module Error =
     newErrorMessages msgs pos |> should equal expected
 
   [<Test>]
-  let ``setErrorMessage replaces the current error``() = 
+  let ``setErrorMessage - replaces the current error``() = 
     let pos = initialPos None
     
     let msg = Message "new message 3"

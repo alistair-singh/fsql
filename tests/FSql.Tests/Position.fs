@@ -6,7 +6,7 @@ module Position =
   open FSql.Position
   
   [<Test>]
-  let ``initialPos with no source file correct``() = 
+  let ``initialPos - with no source file correct``() = 
     let expected = 
       { name = None
         line = 1
@@ -15,7 +15,7 @@ module Position =
     initialPos None |> should equal expected
   
   [<Test>]
-  let ``initialPos with source file correct``() = 
+  let ``initialPos - with source file correct``() = 
     let expected = 
       { name = Some "TestFile"
         line = 1
@@ -24,7 +24,7 @@ module Position =
     initialPos (Some "TestFile") |> should equal expected
   
   [<Test>]
-  let ``updatePosChar normal character column increment``() = 
+  let ``updatePosChar - normal character column increment``() = 
     let expected = 
       { name = None
         line = 1
@@ -35,7 +35,7 @@ module Position =
     updatePosChar initial 'x' |> should equal expected
   
   [<Test>]
-  let ``updatePosChar '\r' character absolute increment``() = 
+  let ``updatePosChar - '\r' character absolute increment``() = 
     let expected = 
       { name = None
         line = 1
@@ -46,7 +46,7 @@ module Position =
     updatePosChar initial '\r' |> should equal expected
   
   [<Test>]
-  let ``updatePosChar '\n' character column reset, line increment``() = 
+  let ``updatePosChar - '\n' character column reset, line increment``() = 
     let expected = 
       { name = None
         line = 4
@@ -62,7 +62,7 @@ module Position =
     updatePosChar initial '\n' |> should equal expected
   
   [<Test>]
-  let ``updatePosString "" string return same value``() = 
+  let ``updatePosString - "" string return same value``() = 
     let expected = 
       { name = None
         line = 4
@@ -78,7 +78,7 @@ module Position =
     updatePosString initial "" |> should equal expected
   
   [<Test>]
-  let ``updatePosString "abc\r\nabc\nab" string return valid position``() = 
+  let ``updatePosString - "abc\r\nabc\nab" string return valid position``() = 
     let expected = 
       { name = None
         line = 3

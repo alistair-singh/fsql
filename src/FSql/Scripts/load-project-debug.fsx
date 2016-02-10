@@ -5,3 +5,4 @@
       "../Position.fs"
       "../Error.fs"
       "../Primitive.fs"
+      "../Character.fs"

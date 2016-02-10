@@ -48,6 +48,7 @@
     <Compile Include="Position.fs" />
     <Compile Include="Error.fs" />
     <Compile Include="Primitive.fs" />
+    <Compile Include="Character.fs" />
     <None Include="Scripts\load-references-debug.fsx" />
     <None Include="Scripts\load-project-debug.fsx" />
   </ItemGroup>

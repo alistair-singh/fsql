@@ -4,4 +4,5 @@
 #load "../AssemblyInfo.fs"
       "../Position.fs"
       "../Error.fs"
+      "../Character.fs"
       "../Tests.fs"
