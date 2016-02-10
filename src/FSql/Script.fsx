@@ -1,5 +1,4 @@
-﻿module Script
-
+﻿
 #time 
 #load "Position.fs"
 #load "Error.fs"
