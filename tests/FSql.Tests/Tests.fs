@@ -23,7 +23,6 @@
 //// Primitive.pEof -> rename to eof
 //// Primitive.pToken -> rename to token
 //// Primitive.pTokens -> rename to tokens
-//// Primitive.satisfy -> move to Char.fs
 module Test = 
   open NUnit.Framework
   open FsUnit
