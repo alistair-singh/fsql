@@ -52,9 +52,9 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Position.fs" />
-    <Compile Include="Error.fs" />
-    <Compile Include="Character.fs" />
+    <Compile Include="PositionTests.fs" />
+    <Compile Include="ErrorTests.fs" />
+    <Compile Include="CharacterTests.fs" />
     <Compile Include="Tests.fs" />
     <None Include="Scripts\load-references-debug.fsx" />
     <None Include="Scripts\load-project-debug.fsx" />

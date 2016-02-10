@@ -2,7 +2,7 @@
 #I __SOURCE_DIRECTORY__
 #load "load-references-debug.fsx"
 #load "../AssemblyInfo.fs"
-      "../Position.fs"
-      "../Error.fs"
-      "../Character.fs"
+      "../PositionTests.fs"
+      "../ErrorTests.fs"
+      "../CharacterTests.fs"
       "../Tests.fs"
