@@ -13,4 +13,8 @@ module Character =
   
   let char' c = satisfy ((=) c) |> pLabel (showToken c)
   let string' (str : seq<char>) = pTokens updatePosString (=) str
-  
+
+  let eqi a b = System.Char.ToLowerInvariant(a) = System.Char.ToLowerInvariant(b) 
+  let chari' c = satisfy (eqi c) |> pLabel (showToken c)
+  let stringi' (str : seq<char>) = pTokens updatePosString eqi str
+
